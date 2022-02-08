@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - geometry hierarchy 2</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				background:#fff;
+				padding:0;
+				margin:0;
+				font-weight: bold;
+				overflow:hidden;
+			}
+		</style>
+	</head>
+	<body>
+		<script src="three.js-r137/build/three.min.js"></script>
+    	<script src="three.js-r137/examples/js/controls/OrbitControls.js"></script>
+		<script src="three.js-r137/examples/js/loaders/GLTFLoader.js"></script>
+
+		<script >
+
+			const container = document.createElement( 'div' );
+			document.body.appendChild( container );
+            // Instantiate a loader
+            
+			const scene = new THREE.Scene()
+			var aspect = window.innerWidth / window.innerHeight;
+
+        	var camera = new THREE.PerspectiveCamera( 25, window.innerWidth / window.innerHeight, 1, 20000 );
+			camera.position.set(1,1,20);
+
+
+			var renderer = new THREE.WebGLRenderer( );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				container.appendChild( renderer.domElement );
+
+			var controls = new THREE.OrbitControls( camera, renderer.domElement );	
+        	
+
+        	
+
+        
+			const loader = new THREE.GLTFLoader().setPath('3D_test/rubis_zelda/');
+			loader.load( 'scene.gltf', function ( gltf ) {
+
+				const rubis = gltf.scene;
+				rubis.scale.set(2, 2, 2);
+				rubis.position.x = 0;
+				rubis.position.y = 0;
+				rubis.position.Z = 0;
+
+				scene.add( rubis);
+
+			} );
+
+			function animate() {
+				render();
+				requestAnimationFrame( animate );
+			}
+
+			function render() {
+          		renderer.render( scene, camera );
+        	}
+
+
+        render();
+		animate();
+
+		</script>
+
+	</body>
+</html>

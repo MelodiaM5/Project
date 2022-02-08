@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+   <head>		
+       <title>____________glTF2_Loader_________</title>
+       <style>
+       body { margin: 0; }
+       canvas { width: 100%; height: 100% }
+     </style>
+ </head>
+   <body>
+    <script src="three.js-r137/build/three.min.js"></script>
+    	<script src="three.js-r137/examples/js/controls/OrbitControls.js"></script>
+		<script src="three.js-r137/examples/js/loaders/GLTFLoader.js"></script>
+   
+<script>		
+
+// Load 3D Scene
+var scene = new THREE.Scene(); 
+
+// Load Camera Perspektive
+var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 20000 );
+
+   
+// Load a Renderer
+var renderer = new THREE.WebGLRenderer({ alpha: false });
+renderer.setClearColor( 0xC5C5C3 );
+renderer.setPixelRatio( window.devicePixelRatio );
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// load clock
+const clock = new THREE.Clock();
+           
+// Load Light
+var ambientLight = new THREE.HemisphereLight( 0xfffffb, 0x080820, 1 );
+scene.add( ambientLight );
+           
+var directionalLight = new THREE.DirectionalLight( 0xffffff );
+scene.add( directionalLight );				
+
+// glTf 2.0 Loader
+var loader = new THREE.GLTFLoader();
+
+
+   loader.load( '3D_test/morning_town/scene.gltf', function ( gltf ) {
+   var map = gltf.scene;
+   scene.add( map);
+   });
+
+var loaderRubis = new THREE.GLTFLoader();
+
+// load Rubis
+loaderRubis.load( '3D_test/rubis_zelda/scene.gltf', function ( gltf ) {
+    var rubis = gltf.scene;
+    rubis.traverse((child) => {
+        if (child.isMesh) child.material = new THREE.MeshPhongMaterial({color: 0xFF0000,    // red (can also use a CSS color string here)
+                                                                        flatShading: true});
+    });
+    rubis.scale.set(0.1, 0.1, 0.1);
+    rubis.position.x = 0;
+	rubis.position.y = 10;
+	rubis.position.z = 5;
+    console.log(rubis)
+    scene.add(rubis);
+});
+
+loaderRubis.load( '3D_test/rubis_zelda/scene.gltf', function ( gltf ) {
+    var rubis = gltf.scene;
+    rubis.traverse((child) => {
+        if (child.isMesh) child.material = new THREE.MeshPhongMaterial({color: 0x82ec0c,    // red (can also use a CSS color string here)
+                                                                        flatShading: true});
+    });	
+    rubis.scale.set(0.1, 0.1, 0.1);
+    rubis.position.x = 0;
+	rubis.position.y = 10;
+	rubis.position.z = 0;
+    scene.add(rubis);
+});
+
+loaderRubis.load( '3D_test/rubis_zelda/scene.gltf', function ( gltf ) {
+    var rubis = gltf.scene;
+    rubis.traverse((child) => {
+        if (child.isMesh) child.material = new THREE.MeshPhongMaterial({color: 0x82ec0c,    // red (can also use a CSS color string here)
+                                                                        flatShading: true});
+    });	
+    rubis.scale.set(0.1, 0.1, 0.1);
+    rubis.position.x = 13;
+	rubis.position.y = 13;
+	rubis.position.z = 0;
+    scene.add(rubis);
+});
+
+loaderRubis.load( '3D_test/rubis_zelda/scene.gltf', function ( gltf ) {
+    var rubis = gltf.scene;
+    rubis.traverse((child) => {
+        if (child.isMesh) child.material = new THREE.MeshPhongMaterial({color: 0x82ec0c,    // red (can also use a CSS color string here)
+                                                                        flatShading: true});
+    });	
+    rubis.scale.set(0.1, 0.1, 0.1);
+    rubis.position.x = -13;
+	rubis.position.y = 10;
+	rubis.position.z = 8;
+    scene.add(rubis);
+});
+
+// load Perso
+
+var loaderPerso = new THREE.GLTFLoader();
+let perso;
+loaderPerso.load( '3D_test/among_us_character/scene.gltf', function ( gltf ) {
+    mixer = new THREE.AnimationMixer( gltf.scene );
+		var action = mixer.clipAction( gltf.animations[ 0 ] );
+		action.play();
+    perso = gltf.scene;
+    perso.scale.set(0.01, 0.01, 0.01);
+    perso.position.x = -10;
+	perso.position.y = 10;
+	perso.position.z = -10;
+    perso.add(camera);
+    camera.position.set(-250, 696, -300);
+    camera.lookAt(perso.position)
+    scene.add(perso);
+});
+
+
+// Control keys
+
+
+
+
+
+const keyStates = {};
+let walk = false;
+let tour = 0;
+
+document.addEventListener( 'keydown', ( event ) => {
+
+    keyStates[ event.code ] = true;
+    rotate();
+    
+
+} );
+
+document.addEventListener( 'keyup', ( event ) => {
+
+    keyStates[ event.code ] = false;
+    tour = 0
+    walk = false;
+
+} );
+
+// function control moove
+
+
+let vectorVit = new THREE.Vector3( 0, 0, 0.8)
+
+function rotate(){
+    if ( keyStates['KeyA'] && tour == 0){
+        var axis = new THREE.Vector3( 0, 1, 0 );
+        vectorVit.applyAxisAngle( axis, Math.PI/2 );
+        perso.rotation.y += Math.PI/2
+        tour++
+        console.log('e')
+        }
+    if ( keyStates['KeyD'] && tour == 0){
+
+        var axis = new THREE.Vector3( 0, 1, 0 );
+        vectorVit.applyAxisAngle( axis, -Math.PI/2);
+        perso.rotation.y += -Math.PI/2
+        tour++
+        console.log('e')
+    }
+        
+}
+
+function controls( ) {
+
+
+if ( keyStates[ 'KeyW' ] ) {
+
+    perso.position.add(vectorVit);
+    walk = true;
+
+}
+
+if ( keyStates[ 'KeyS' ] ) {
+
+
+    perso.position.add(vectorVit.clone().multiplyScalar(-1));
+    walk = true;
+
+}
+
+if ( keyStates[ 'KeyA' ] ) {
+
+    walk = true;
+
+}
+
+if ( keyStates[ 'KeyD' ] ) {
+
+    walk = true;
+
+}
+}
+
+
+
+const axesHelper = new THREE.AxesHelper( 5 );
+scene.add( axesHelper );
+
+
+
+ 
+
+function animate() {
+    requestAnimationFrame( animate );
+
+    controls();
+
+    if(walk){
+
+        var delta = clock.getDelta();
+
+        if ( mixer ) mixer.update( delta );
+        renderer.render( scene, camera );
+
+    }else
+    render()
+}
+
+function render() {
+   renderer.render( scene, camera );
+   }
+
+render();
+animate();
+
+</script>	
+</body>
+</html>
