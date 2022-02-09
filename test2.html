@@ -117,8 +117,9 @@ loaderPerso.load( '3D_test/among_us_character/scene.gltf', function ( gltf ) {
 	perso.position.y = 10;
 	perso.position.z = -10;
     perso.add(camera);
-    camera.position.set(-250, 696, -300);
+    camera.position.set(0, 696, 0);
     camera.lookAt(perso.position)
+    camera.rotation.y += Math.PI;
     scene.add(perso);
 });
 
@@ -155,21 +156,167 @@ document.addEventListener( 'keyup', ( event ) => {
 let vectorVit = new THREE.Vector3( 0, 0, 0.8)
 
 function rotate(){
+
+    let vecA = new THREE.Vector3( 0.8, 0, 0)
+    let vecD = new THREE.Vector3( -0.8, 0, 0)
+    let vecZ = new THREE.Vector3( 0, 0, 0.8)
+    let vecS = new THREE.Vector3( 0, 0, -0.8)
+
     if ( keyStates['KeyA'] && tour == 0){
-        var axis = new THREE.Vector3( 0, 1, 0 );
-        vectorVit.applyAxisAngle( axis, Math.PI/2 );
-        perso.rotation.y += Math.PI/2
-        tour++
-        console.log('e')
+        
+            
+            let angleRotate = 0;
+
+            if(vectorVit.equals(vecD )){
+
+                angleRotate = Math.PI
+
+                var axis = new THREE.Vector3( 0, 1, 0 );
+                vectorVit = vecA;
+                perso.rotation.y += angleRotate
+                tour++
+                console.log('e')
+
+            }else if(vectorVit.equals(vecZ) ){
+
+                angleRotate = Math.PI/2
+
+                var axis = new THREE.Vector3( 0, 1, 0 );
+                vectorVit = vecA;
+                perso.rotation.y += angleRotate
+                tour++
+                console.log('e')
+
+            }
+            else if(vectorVit.equals(vecS)){
+
+                angleRotate = -Math.PI/2
+
+                var axis = new THREE.Vector3( 0, 1, 0 );
+                vectorVit = vecA;
+                perso.rotation.y += angleRotate
+                tour++
+                console.log('e')
+
+            }
         }
+
     if ( keyStates['KeyD'] && tour == 0){
 
-        var axis = new THREE.Vector3( 0, 1, 0 );
-        vectorVit.applyAxisAngle( axis, -Math.PI/2);
-        perso.rotation.y += -Math.PI/2
-        tour++
-        console.log('e')
+           let angleRotate = 0;
+
+            if(vectorVit.equals(vecZ )){
+
+                angleRotate = -Math.PI/2
+
+                var axis = new THREE.Vector3( 0, 1, 0 );
+                vectorVit = vecD;
+                perso.rotation.y += angleRotate
+                tour++
+                console.log('e')
+
+            }else if(vectorVit.equals(vecA) ){
+
+                angleRotate = Math.PI
+
+                var axis = new THREE.Vector3( 0, 1, 0 );
+                vectorVit = vecD;
+                perso.rotation.y += angleRotate
+                tour++
+                console.log('e')
+
+            }
+            else if(vectorVit.equals(vecS)){
+
+                angleRotate = Math.PI/2
+
+                var axis = new THREE.Vector3( 0, 1, 0 );
+                vectorVit = vecD;
+                perso.rotation.y += angleRotate
+                tour++
+                console.log('e')
+
+           
+            }
     }
+    if ( keyStates['KeyW'] && tour == 0){
+
+        let angleRotate = 0;
+
+        if(vectorVit.equals(vecA )){
+
+            angleRotate = -Math.PI/2
+
+            var axis = new THREE.Vector3( 0, 1, 0 );
+            vectorVit = vecZ;
+            perso.rotation.y += angleRotate
+            tour++
+            console.log('e')
+
+        }else if(vectorVit.equals(vecS) ){
+
+            angleRotate = Math.PI
+
+            var axis = new THREE.Vector3( 0, 1, 0 );
+            vectorVit = vecZ;
+            perso.rotation.y += angleRotate
+            tour++
+            console.log('e')
+
+        }
+        else if(vectorVit.equals(vecD)){
+
+            angleRotate = Math.PI/2
+
+            var axis = new THREE.Vector3( 0, 1, 0 );
+            vectorVit = vecZ;
+            perso.rotation.y += angleRotate
+            tour++
+            console.log('e')
+
+
+        }
+}
+    if ( keyStates['KeyS'] && tour == 0){
+
+        let angleRotate = 0;
+
+        if(vectorVit.equals(vecA )){
+
+            angleRotate = Math.PI/2
+
+            var axis = new THREE.Vector3( 0, 1, 0 );
+            vectorVit = vecS;
+            perso.rotation.y += angleRotate
+            tour++
+            console.log('e')
+
+        }else if(vectorVit.equals(vecD) ){
+
+            angleRotate = -Math.PI/2
+
+            var axis = new THREE.Vector3( 0, 1, 0 );
+            vectorVit = vecS;
+            perso.rotation.y += angleRotate
+            tour++
+            console.log('e')
+
+        }
+        else if(vectorVit.equals(vecZ)){
+
+            angleRotate = Math.PI
+
+            var axis = new THREE.Vector3( 0, 1, 0 );
+            vectorVit = vecS;
+            perso.rotation.y += angleRotate
+            tour++
+            console.log('e')
+
+
+        }
+        }
+
+
         
 }
 
@@ -193,13 +340,15 @@ if ( keyStates[ 'KeyS' ] ) {
 
 if ( keyStates[ 'KeyA' ] ) {
 
+    perso.position.add(vectorVit);
     walk = true;
 
 }
 
 if ( keyStates[ 'KeyD' ] ) {
 
-    walk = true;
+    perso.position.add(vectorVit);
+    walk = true
 
 }
 }
