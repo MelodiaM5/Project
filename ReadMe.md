@@ -10,3 +10,4 @@
 Vous pouvez vous déplacer sur la map à l'aide des boutons Z(haut) Q(gauche) S(bas) D(droite).
 
 Je n'ai pas encore eu le temps de gérer la colision avec les rubis pour les récolter malheursement le jeu consiste donc uniquement à se déplacer.
+Désolé pour le rendu un peu tard
