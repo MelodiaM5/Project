@@ -45,6 +45,10 @@ var loader = new THREE.GLTFLoader();
    loader.load( '3D_test/morning_town/scene.gltf', function ( gltf ) {
    var map = gltf.scene;
    scene.add( map);
+   map.add(camera);
+   camera.position.set(0, 100,0);
+   camera.lookAt(map.position)
+   camera.rotation.z += Math.PI
    });
 
 var loaderRubis = new THREE.GLTFLoader();
@@ -116,10 +120,6 @@ loaderPerso.load( '3D_test/among_us_character/scene.gltf', function ( gltf ) {
     perso.position.x = -10;
 	perso.position.y = 10;
 	perso.position.z = -10;
-    perso.add(camera);
-    camera.position.set(0, 696, 0);
-    camera.lookAt(perso.position)
-    camera.rotation.z+= Math.PI;
     scene.add(perso);
 });
 
@@ -157,8 +157,8 @@ let vectorVit = new THREE.Vector3( 0, 0, 0.8)
 
 function rotate(){
 
-    let vecA = new THREE.Vector3( 0.8, 0, 0)
-    let vecD = new THREE.Vector3( -0.8, 0, 0)
+    let vecA = new THREE.Vector3( -0.8, 0, 0)
+    let vecD = new THREE.Vector3( 0.8, 0, 0)
     let vecZ = new THREE.Vector3( 0, 0, 0.8)
     let vecS = new THREE.Vector3( 0, 0, -0.8)
 
@@ -169,7 +169,7 @@ function rotate(){
 
             if(vectorVit.equals(vecD )){
 
-                angleRotate = Math.PI
+                angleRotate = -Math.PI
 
                 var axis = new THREE.Vector3( 0, 1, 0 );
                 vectorVit = vecA;
@@ -179,7 +179,7 @@ function rotate(){
 
             }else if(vectorVit.equals(vecZ) ){
 
-                angleRotate = Math.PI/2
+                angleRotate = -Math.PI/2
 
                 var axis = new THREE.Vector3( 0, 1, 0 );
                 vectorVit = vecA;
@@ -190,7 +190,7 @@ function rotate(){
             }
             else if(vectorVit.equals(vecS)){
 
-                angleRotate = -Math.PI/2
+                angleRotate = Math.PI/2
 
                 var axis = new THREE.Vector3( 0, 1, 0 );
                 vectorVit = vecA;
@@ -333,7 +333,7 @@ if ( keyStates[ 'KeyW' ] ) {
 if ( keyStates[ 'KeyS' ] ) {
 
 
-    perso.position.add(vectorVit.clone().multiplyScalar(-1));
+    perso.position.add(vectorVit);
     walk = true;
 
 }
