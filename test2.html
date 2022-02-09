@@ -157,8 +157,8 @@ let vectorVit = new THREE.Vector3( 0, 0, 0.8)
 
 function rotate(){
 
-    let vecA = new THREE.Vector3( -0.8, 0, 0)
-    let vecD = new THREE.Vector3( 0.8, 0, 0)
+    let vecA = new THREE.Vector3( 0.8, 0, 0)
+    let vecD = new THREE.Vector3( -0.8, 0, 0)
     let vecZ = new THREE.Vector3( 0, 0, 0.8)
     let vecS = new THREE.Vector3( 0, 0, -0.8)
 
@@ -179,7 +179,7 @@ function rotate(){
 
             }else if(vectorVit.equals(vecZ) ){
 
-                angleRotate = -Math.PI/2
+                angleRotate = Math.PI/2
 
                 var axis = new THREE.Vector3( 0, 1, 0 );
                 vectorVit = vecA;
@@ -190,7 +190,7 @@ function rotate(){
             }
             else if(vectorVit.equals(vecS)){
 
-                angleRotate = Math.PI/2
+                angleRotate = 3*Math.PI/2
 
                 var axis = new THREE.Vector3( 0, 1, 0 );
                 vectorVit = vecA;
