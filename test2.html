@@ -8,9 +8,9 @@
      </style>
  </head>
    <body>
-    <script src="three.js-r137/build/three.min.js"></script>
-    	<script src="three.js-r137/examples/js/controls/OrbitControls.js"></script>
-		<script src="three.js-r137/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="three.js-r137/three.js-r137/build/three.min.js"></script>
+    	<script src="three.js-r137/three.js-r137/examples/js/controls/OrbitControls.js"></script>
+		<script src="three.js-r137/three.js-r137/examples/js/loaders/GLTFLoader.js"></script>
    
 <script>		
 
@@ -119,7 +119,7 @@ loaderPerso.load( '3D_test/among_us_character/scene.gltf', function ( gltf ) {
     perso.add(camera);
     camera.position.set(0, 696, 0);
     camera.lookAt(perso.position)
-    camera.rotation.y += Math.PI;
+    camera.rotation.z+= Math.PI;
     scene.add(perso);
 });
 
