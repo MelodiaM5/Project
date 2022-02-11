@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<!-- three.js library -->
+		<script src='AR.js/three.js/examples/vendor/three.js/build/three.min.js'></script>
+		<script src="AR.js/three.js/examples/vendor/three.js/examples/js/libs/stats.min.js"></script>
+		<script src="AR.js/three.js/examples/vendor/three.js/examples/js/loaders/MTLLoader.js"></script>
+		<script src="AR.js/three.js/examples/vendor/three.js/examples/js/loaders/OBJLoader.js"></script>
+		<!-- ar.js -->
+		<script src="AR.js/three.js/build/ar.js"></script>
+		<script>THREEx.ArToolkitContext.baseURL = "AR.js/"</script>
+
+
+<body style='margin : 0px; overflow: hidden; font-family: Monospace;'><div style='position: absolute; top: 10px; width:100%; text-align: center; z-index: 1;'>
+	<div style='position: absolute; top: 10px; width:100%; text-align: center; z-index: 1; color: chocolate;'>
+
+		<h1 id="cubeFound">Vous avez trouvé 0 elements sur 5</h1>
+	</div>
+	
+	<script >
+
+	//////////////////////////////////////////////////////////////////////////////////
+	//		Init
+	//////////////////////////////////////////////////////////////////////////////////
+
+	
+	//init renderer
+	let renderer	= new THREE.WebGLRenderer({
+		// antialias	: true,
+		alpha: true
+	});
+	renderer.setClearColor(new THREE.Color('lightgrey'), 0)
+	// renderer.setPixelRatio( 1/2 );
+	renderer.setSize( window.innerWidth, window.innerHeight );
+	renderer.domElement.style.position = 'absolute'
+	renderer.domElement.style.top = '0px'
+	renderer.domElement.style.left = '0px'
+	document.body.appendChild( renderer.domElement );
+
+	// array of functions for the rendering loop
+	let onRenderFcts= [];
+
+	// init scene and camera
+	let scene	= new THREE.Scene();
+	let ambientLight = new THREE.AmbientLight( 0xcccccc, 1.0 );
+	scene.add( ambientLight );
+
+	//////////////////////////////////////////////////////////////////////////////////
+	//		Initialize a basic camera
+	//////////////////////////////////////////////////////////////////////////////////
+
+	// Create a camera
+	let camera = new THREE.Camera();
+	scene.add(camera);
+
+	////////////////////////////////////////////////////////////////////////////////
+	//          handle arToolkitSource
+	////////////////////////////////////////////////////////////////////////////////
+
+	let arToolkitSource = new THREEx.ArToolkitSource({
+		// to read from the webcam
+		sourceType : 'webcam',
+
+		// to read from an image
+		// sourceType : 'image',
+		// sourceUrl : THREEx.ArToolkitContext.baseURL + '../data/images/img.jpg',
+
+		// to read from a video
+		// sourceType : 'video',
+		// sourceUrl : THREEx.ArToolkitContext.baseURL + '../data/videos/headtracking.mp4',
+	})
+
+	arToolkitSource.init(function onReady(){
+		onResize()
+	})
+
+	// handle resize
+	window.addEventListener('resize', function(){
+		onResize()
+	})
+	function onResize(){
+		arToolkitSource.onResizeElement()
+		arToolkitSource.copyElementSizeTo(renderer.domElement)
+		if( arToolkitContext.arController !== null ){
+			arToolkitSource.copyElementSizeTo(arToolkitContext.arController.canvas)
+		}
+	}
+	////////////////////////////////////////////////////////////////////////////////
+	//          initialize arToolkitContext
+	////////////////////////////////////////////////////////////////////////////////
+
+
+	// create atToolkitContext
+	let arToolkitContext = new THREEx.ArToolkitContext({
+		cameraParametersUrl: THREEx.ArToolkitContext.baseURL + '/data/data/camera_para.dat',
+		detectionMode: 'mono',
+		maxDetectionRate: 30,
+		canvasWidth: 80*3,
+		canvasHeight: 60*3,
+	})
+	// initialize it
+	arToolkitContext.init(function onCompleted(){
+		// copy projection matrix to camera
+		camera.projectionMatrix.copy( arToolkitContext.getProjectionMatrix() );
+	})
+
+	// update artoolkit on every frame
+	onRenderFcts.push(function(){
+		if( arToolkitSource.ready === false )	return
+
+		arToolkitContext.update( arToolkitSource.domElement )
+	})
+
+
+	////////////////////////////////////////////////////////////////////////////////
+	//          Create a ArMarkerControls
+	////////////////////////////////////////////////////////////////////////////////
+
+	let markerRoot = new THREE.Group
+	scene.add(markerRoot)
+	let artoolkitMarker = new THREEx.ArMarkerControls(arToolkitContext, markerRoot, {
+		type : 'pattern',
+		patternUrl : THREEx.ArToolkitContext.baseURL + '/data/data/patt.hiro'
+		//patternUrl : THREEx.ArToolkitContext.baseURL + '/data/data/patt.kanji'
+	})
+
+
+	// build a smoothedControls
+	let smoothedRoot = new THREE.Group()
+	scene.add(smoothedRoot)
+	let smoothedControls = new THREEx.ArSmoothedControls(smoothedRoot, {
+		lerpPosition: 0.4,
+		lerpQuaternion: 0.3,
+		lerpScale: 1,
+	})
+
+
+	let markerRootKanji = new THREE.Group
+	scene.add(markerRootKanji)
+	let artoolkitMarkerKanji = new THREEx.ArMarkerControls(arToolkitContext, markerRootKanji, {
+		type : 'pattern',
+		patternUrl : THREEx.ArToolkitContext.baseURL + '/data/data/patt.kanji'
+	})
+
+
+	// build a smoothedControls
+	let smoothedRootKanji = new THREE.Group()
+	scene.add(smoothedRootKanji)
+	let smoothedControlsKanji = new THREEx.ArSmoothedControls(smoothedRootKanji, {
+		lerpPosition: 0.4,
+		lerpQuaternion: 0.3,
+		lerpScale: 1,
+	})
+
+	let markerRootA= new THREE.Group
+	scene.add(markerRootA)
+	let artoolkitMarkerA = new THREEx.ArMarkerControls(arToolkitContext, markerRootA, {
+		type : 'pattern',
+		patternUrl : THREEx.ArToolkitContext.baseURL + '/data/data/letterA.patt'
+	})
+
+
+	// build a smoothedControls
+	let smoothedRootA = new THREE.Group()
+	scene.add(smoothedRootA)
+	let smoothedControlsA = new THREEx.ArSmoothedControls(smoothedRootA, {
+		lerpPosition: 0.4,
+		lerpQuaternion: 0.3,
+		lerpScale: 1,
+	})
+
+	let markerRootB = new THREE.Group
+	scene.add(markerRootB)
+	let artoolkitMarkerB = new THREEx.ArMarkerControls(arToolkitContext, markerRootB, {
+		type : 'pattern',
+		patternUrl : THREEx.ArToolkitContext.baseURL + '/data/data/letterB.patt'
+	})
+
+
+	// build a smoothedControls
+	let smoothedRootB = new THREE.Group()
+	scene.add(smoothedRootB)
+	let smoothedControlsB = new THREEx.ArSmoothedControls(smoothedRootB, {
+		lerpPosition: 0.4,
+		lerpQuaternion: 0.3,
+		lerpScale: 1,
+	})
+
+	let markerRootC = new THREE.Group
+	scene.add(markerRootC)
+	let artoolkitMarkerC = new THREEx.ArMarkerControls(arToolkitContext, markerRootC, {
+		type : 'pattern',
+		patternUrl : THREEx.ArToolkitContext.baseURL + '/data/data/letterC.patt'
+	})
+
+
+	// build a smoothedControls
+	let smoothedRootC = new THREE.Group()
+	scene.add(smoothedRootC)
+	let smoothedControlsC = new THREEx.ArSmoothedControls(smoothedRootC, {
+		lerpPosition: 0.4,
+		lerpQuaternion: 0.3,
+		lerpScale: 1,
+	})
+
+
+
+	onRenderFcts.push(function(delta){
+
+		smoothedControls.update(markerRoot)
+		smoothedControlsKanji.update(markerRootKanji)
+		smoothedControlsA.update(markerRootA)
+		smoothedControlsB.update(markerRootB)
+		smoothedControlsC.update(markerRootC)
+
+	})
+
+
+
+
+	//////////////////////////////////////////////////////////////////////////////////
+	//		add an object in the scene
+	//////////////////////////////////////////////////////////////////////////////////
+
+	let arWorldRoot = smoothedRoot;
+	let arWorldRootKanji = smoothedRootKanji;
+	let arWorldRootA = smoothedRootA;
+	let arWorldRootB = smoothedRootB;
+	let arWorldRootC = smoothedRootC;
+
+	// add a torus knot
+	
+
+	let mesh = new THREE.MTLLoader()
+		.load( 'MarkerObject/sword.mtl', function ( materials ) {
+			materials.preload();
+			sword = new THREE.OBJLoader()
+			sword.setMaterials(materials)
+			sword.load( '3D_test/sword.obj', function ( group ) {
+					mesh0 = group;
+					mesh0.position.y = -1;
+					mesh0.position.x = 0.5;
+					mesh0.position.z = -0.5;
+					mesh0.scale.set(0.05,0.05,0.05);
+					arWorldRoot.add(mesh0);
+				})
+			});
+
+	
+
+	let meshRubis = new THREE.MTLLoader()
+		.load( 'MarkerObject/rubis.mtl', function ( materials ) {
+			materials.preload();
+			sword = new THREE.OBJLoader()
+			sword.setMaterials(materials)
+			sword.load( '3D_test/rubis.obj', function ( group ) {
+					mesh0 = group;
+					mesh0.position.y = -1;
+					mesh0.position.x = 0.5;
+					mesh0.position.z = -0.5;
+					mesh0.scale.set(0.05,0.05,0.05);
+					arWorldRootKanji.add(mesh0);
+				})
+			});
+
+
+	let meshFairy = new THREE.MTLLoader()
+		.load( 'MarkerObject/fairy.mtl', function ( materials ) {
+			materials.preload();
+			sword = new THREE.OBJLoader()
+			sword.setMaterials(materials)
+			sword.load( '3D_test/fairy.obj', function ( group ) {
+					mesh0 = group;
+					mesh0.position.y = -1;
+					mesh0.position.x = -0.25;
+					mesh0.position.z = -0.5;
+					mesh0.scale.set(0.125,0.125,0.125);
+					arWorldRootA.add(mesh0);
+				})
+			});
+
+
+
+	
+
+	
+		// add a torus knot
+
+		let geometry	= new THREE.TorusKnotGeometry(0.3,0.1,64,16);
+		let material	= new THREE.MeshNormalMaterial();
+		let meshTorus	= new THREE.Mesh( geometry, material );
+		meshTorus.position.y = 0.5
+		meshTorus.scale.set(0.5,0.5,0.5);
+		arWorldRootB.add( meshTorus );
+
+		onRenderFcts.push(function(delta){
+			meshTorus.rotation.x += Math.PI*delta
+		})
+
+	
+
+	let meshShield = new THREE.MTLLoader()
+		.load( 'MarkerObject/shield.mtl', function ( materials ) {
+			materials.preload();
+			
+			sword = new THREE.OBJLoader()
+			sword.setMaterials(materials)
+			sword.load( 'MarkerObject/shield.obj', function ( group ) {
+					mesh0 = group;
+					mesh0.scale.set(0.025,0.025,0.025);
+					arWorldRootC.add(mesh0);
+				})
+			});
+
+
+
+
+	//////////////////////////////////////////////////////////////////////////////////
+	//		render the whole thing on the page
+	//////////////////////////////////////////////////////////////////////////////////
+	let stats = new Stats();
+
+	let numberCubeFound = 0;
+	let cubeHiroFound = false;
+	let cubeAFound = false;
+	let cubeBFound = false;
+	let cubeCFound = false;
+	let cubeKanjiFound = false;
+	let win = false;
+
+	document.body.appendChild( stats.dom );
+	// render the scene
+	onRenderFcts.push(function(){
+		renderer.render( scene, camera );
+		stats.update();
+		if (markerRootA.visible) {
+			if(!cubeAFound){
+
+				numberCubeFound+=1;
+				document.getElementById('cubeFound').innerText = "Vous avez trouvé " + numberCubeFound + " cube(s) sur 5"
+				cubeAFound = true
+
+
+
+				if(numberCubeFound==5){
+					if(!win){
+
+						alert('Félicitation vous pouvez partir en mission !')
+						win = true
+
+					}
+				}
+
+			}
+		}
+		if (markerRoot.visible) {
+			if(!cubeHiroFound){
+
+				numberCubeFound+=1;
+				document.getElementById('cubeFound').innerText = "Vous avez trouvé " + numberCubeFound + " element(s) sur 5"
+				cubeHiroFound = true
+
+
+				if(numberCubeFound==5){
+					if(!win){
+
+						alert('Félicitation vous pouvez partir en mission !')
+						win = true
+
+					}
+				}
+
+			}
+		}
+
+		if (markerRootKanji.visible) {
+			if(!cubeKanjiFound){
+
+				numberCubeFound+=1;
+				document.getElementById('cubeFound').innerText = "Vous avez trouvé " + numberCubeFound + " element(s) sur 5"
+				cubeKanjiFound = true
+
+
+
+				if(numberCubeFound==5){
+					if(!win){
+
+						alert('Félicitation vous pouvez partir en mission !')
+						win = true
+
+					}
+				}
+
+			}
+		}
+
+		if (markerRootB.visible) {
+			if(!cubeBFound){
+
+				numberCubeFound+=1;
+				document.getElementById('cubeFound').innerText = "Vous avez trouvé " + numberCubeFound + " element(s) sur 5"
+				cubeBFound = true
+
+
+				if(numberCubeFound==5){
+					if(!win){
+
+						alert('Félicitation vous pouvez partir en mission !')
+						win = true
+
+					}
+				}
+
+			}
+		}
+
+		if (markerRootC.visible) {
+			if(!cubeCFound){
+
+				numberCubeFound+=1;
+				document.getElementById('cubeFound').innerText = "Vous avez trouvé " + numberCubeFound + " element(s) sur 5"
+				cubeCFound = true
+
+
+				if(numberCubeFound==5){
+					if(!win){
+
+						alert('Félicitation vous pouvez partir en mission !')
+						win = true
+
+					}
+				}
+
+			}
+
+		}
+	})
+	
+
+
+
+	// run the rendering loop
+	var lastTimeMsec= null
+	requestAnimationFrame(function animate(nowMsec){
+		// keep looping
+		requestAnimationFrame( animate );
+		// measure time
+		lastTimeMsec	= lastTimeMsec || nowMsec-1000/60
+		var deltaMsec	= Math.min(200, nowMsec - lastTimeMsec)
+		lastTimeMsec	= nowMsec
+		// call each update function
+		onRenderFcts.forEach(function(onRenderFct){
+			onRenderFct(deltaMsec/1000, nowMsec/1000)
+		})
+	})
+</script></body>
